@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import unicode_literals
 
 import datetime
@@ -19,7 +21,7 @@ def test_setup():
     assert len(woman_tipping_hand) == 4
 
 
-def test_load_codes_from_file():
+def test_load_codes_from_file_raises_if_dne():
     if os.path.isfile(demoji.CACHEPATH):
         os.remove(demoji.CACHEPATH)
     with pytest.raises(FileNotFoundError):
@@ -27,9 +29,11 @@ def test_load_codes_from_file():
     assert demoji.last_downloaded_timestamp() is None
 
 
-def test_constants():
-    assert demoji.UPAT.search("U+FFFF")
-    assert demoji.UPAT.search("U+FFFF00")
+def test_download():
+    assert demoji.download_codes() is None
+    assert type(demoji._EMOJI_PAT) == type(re.compile(""))  # noqa
+    assert isinstance(demoji._CODE_TO_DESC, dict)
+    assert os.path.isfile(demoji.CACHEPATH)
 
 
 def test_compile_codes():
@@ -41,7 +45,7 @@ def test_compile_codes():
 
 def test_last_downloaded_timestamp_rettype():
     ts = demoji.last_downloaded_timestamp()
-    assert isinstance(ts, datetime.datetime) or ts is None
+    assert isinstance(ts, datetime.datetime)
 
 
 def test_utc():
@@ -50,20 +54,22 @@ def test_utc():
 
 
 def test_demoji_main():
-    demoji.set_emoji_pattern(False)
-    assert demoji.findall("Hi") == []
+    assert not demoji.findall("Hi")
     assert demoji.replace("Hi") == "Hi"
-    assert demoji.findall("The 🌓 shall rise again") == ["🌓"]
+    assert not demoji.findall("2 ! $&%((@)# $)@ ")
+    assert demoji.findall("The 🌓 shall rise again") == {
+        "🌓": "first quarter moon"
+    }
     allhands = "Someone actually gets paid to make a %s, a %s, and a %s" % (
         person_tipping_hand,
         man_tipping_hand,
         woman_tipping_hand,
     )
-    assert demoji.findall(allhands) == [
-        person_tipping_hand,
-        man_tipping_hand,
-        woman_tipping_hand,
-    ]
+    assert demoji.findall(allhands) == {
+        person_tipping_hand: "person tipping hand",
+        man_tipping_hand: "man tipping hand",
+        woman_tipping_hand: "woman tipping hand",
+    }
     assert (
         demoji.replace(allhands)
         == "Someone actually gets paid to make a , a , and a "
@@ -73,3 +79,75 @@ def test_demoji_main():
         == "Someone actually gets paid to make a X, a X, and a X"
     )
     assert isinstance(demoji.last_downloaded_timestamp(), datetime.datetime)
+
+    # Something for everyone...
+    batch = [
+        "😀",
+        "😂",
+        "🤩",
+        "🤐",
+        "🤢",
+        "🙁",
+        "😫",
+        "🙀",
+        "💓",
+        "🧡",
+        "🖤",
+        "👁️‍🗨️",
+        "✋",
+        "🤙",
+        "👊",
+        "🙏",
+        "👂",
+        "👱‍♂️",
+        "🧓",
+        "🙍‍♀️",
+        "🙋",
+        "🙇",
+        "👩‍⚕️",
+        "👩‍🔧",
+        "👨‍🚒",
+        "👼",
+        "🦸",
+        "🧝‍♀️",
+        "👯‍♀️",
+        "🤽",
+        "🤼‍♀️",
+        "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+        "👩‍👧‍👦",
+        "🐷",
+        "2️⃣",
+        "8️⃣",
+        "🆖",
+        "🈳",
+        "الجزيرة‎",
+        "傳騰訊入股Reddit 言論自由不保?",
+        "🇩🇯",
+        "⬛",
+        "🔵",
+        "🇨🇫",
+        "‼",
+    ]
+    assert len(demoji.findall(" xxx ".join(batch))) == len(batch) - 2
+
+
+def test_utils():
+    assert (
+        demoji.parse_unicode_sequence("1F468 200D 2764 FE0F 200D 1F468")
+        == "\U0001F468\U0000200D\U00002764\U0000FE0F\U0000200D\U0001F468"
+    )
+    assert demoji.parse_unicode_sequence("1F468") == "\U0001F468"
+    assert list(demoji.parse_unicode_range("2648..2653")) == [
+        "♈",
+        "♉",
+        "♊",
+        "♋",
+        "♌",
+        "♍",
+        "♎",
+        "♏",
+        "♐",
+        "♑",
+        "♒",
+        "♓",
+    ]

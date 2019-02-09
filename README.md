@@ -4,7 +4,7 @@ Accurately find or remove [emojis](https://en.wikipedia.org/wiki/Emoji) from a b
 
 ## Basic Usage
 
-Demoji requires an initial data download from Unicode's [emoji code respositry](http://unicode.org/Public/emoji/12.0/emoji-test.txt).
+`demoji` requires an initial data download from the Unicode Consortium's [emoji code repository](http://unicode.org/Public/emoji/12.0/emoji-test.txt).
 
 On first use of the package, call `download_codes()`:
 
@@ -19,7 +19,7 @@ Writing emoji data to /Users/brad/.demoji/codes.json ...
 
 This will store the Unicode hex-notated symbols at `~/.demoji/codes.json` for future use.
 
-Demoji exports two text-related functions, `findall()` and `replace()`, which behave somewhat the `re` module's `findall()` and `sub()`, respectively.  However, `findall()` returns a dictionary of emojis to their full name (description):
+`demoji` exports two text-related functions, `findall()` and `replace()`, which behave somewhat the `re` module's `findall()` and `sub()`, respectively.  However, `findall()` returns a dictionary of emojis to their full name (description):
 
 ```python
 >>> tweet = """\
@@ -43,7 +43,7 @@ Demoji exports two text-related functions, `findall()` and `replace()`, which be
 }
 ```
 
-The reason that Demoji requires a download rather than coming pre-packaged with Unicode emoji data is that the emoji list itself is frequently updated and changed.  You are free to periodically update the local cache by calling `demoji.download_codes()` every so often.
+The reason that `demoji` requires a download rather than coming pre-packaged with Unicode emoji data is that the emoji list itself is frequently updated and changed.  You are free to periodically update the local cache by calling `demoji.download_codes()` every so often.
 
 To pull your last-downloaded date, you can use the `last_downloaded_timestamp()` helper:
 

@@ -130,6 +130,25 @@ def test_demoji_main():
     ]
     assert len(demoji.findall(" xxx ".join(batch))) == len(batch) - 2
 
+    tweet = """\
+    #startspreadingthenews yankees win great start by 🎅🏾 going 5strong innings with 5k’s🔥 🐂
+    solo homerun 🌋🌋 with 2 solo homeruns and👹 3run homerun… 🤡 🚣🏼 👨🏽‍⚖️ with rbi’s … 🔥🔥
+    🇲🇽 and 🇳🇮 to close the game🔥🔥!!!….
+    WHAT A GAME!!..
+    """
+    assert demoji.findall(tweet) == {
+        "🔥": "fire",
+        "🌋": "volcano",
+        "👨🏽\u200d⚖️": "man judge: medium skin tone",
+        "🎅🏾": "Santa Claus: medium-dark skin tone",
+        "🇲🇽": "flag: Mexico",
+        "👹": "ogre",
+        "🤡": "clown face",
+        "🇳🇮": "flag: Nicaragua",
+        "🚣🏼": "person rowing boat: medium-light skin tone",
+        "🐂": "ox",
+    }
+
 
 def test_utils():
     assert (

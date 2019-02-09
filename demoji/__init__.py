@@ -40,7 +40,7 @@ _zero = datetime.timedelta(0)
 
 
 class UTC(datetime.tzinfo):
-    """UTC (Python 2 compat)"""
+    """UTC (Python 2 compat)."""
 
     def utcoffset(self, dt):
         return _zero
@@ -148,9 +148,6 @@ def last_downloaded_timestamp():
 
 
 def _load_codes_from_file():
-    """
-    :rtype: tuple
-    """
     with open(CACHEPATH) as f:
         data = json.load(f)
         ts = datetime.datetime.fromtimestamp(data["timestamp"])
@@ -159,7 +156,6 @@ def _load_codes_from_file():
 
 
 def set_emoji_pattern():
-    """Get global pattern, or set it if it is None, and return it."""
     global _EMOJI_PAT
     global _CODE_TO_DESC
     if _EMOJI_PAT is None:
@@ -176,10 +172,26 @@ def set_emoji_pattern():
 
 
 def findall(string):
+    """Find emojis within ``string``.
+
+    :param string: The input text to search
+    :type string: str
+    :return: A dictionary of ``{emoji: description}``
+    :rtype: dict
+    """
+
+    Returns a dictionary
     set_emoji_pattern()
     return {f: _CODE_TO_DESC[f] for f in set(_EMOJI_PAT.findall(string))}
 
 
 def replace(string, repl=""):
+    """Replace emojis in ``string`` with ``repl``.
+
+    :param string: The input text to search
+    :type string: str
+    :return: Modified ``str`` with replacements made
+    :rtype: str
+    """
     set_emoji_pattern()
     return _EMOJI_PAT.sub(repl, string)

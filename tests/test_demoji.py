@@ -5,26 +5,40 @@ from __future__ import unicode_literals
 import datetime
 import os
 import re
+import sys
 
 import pytest
 
 import demoji
+from demoji import PY2, chr
 
 person_tipping_hand = "💁"  # length 1
 man_tipping_hand = "💁‍♂️"  # length 4
 woman_tipping_hand = "💁‍♀️"  # length 4
 
 
+def test_python_build():
+    # We need a wide (not narrow) Python 2 build.
+    # Narrow will give:
+    # ValueError: unichr() arg not in range(0x10000) (narrow Python build)
+    assert chr(0x10000 + 1)
+
+
 def test_setup():
-    assert len(person_tipping_hand) == 1
-    assert len(man_tipping_hand) == 4
-    assert len(woman_tipping_hand) == 4
+    if PY2:
+        assert len(person_tipping_hand) == 2
+        assert len(man_tipping_hand) == 5
+        assert len(woman_tipping_hand) == 5
+    else:
+        assert len(person_tipping_hand) == 1
+        assert len(man_tipping_hand) == 4
+        assert len(woman_tipping_hand) == 4
 
 
 def test_load_codes_from_file_raises_if_dne():
     if os.path.isfile(demoji.CACHEPATH):
         os.remove(demoji.CACHEPATH)
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(IOError):
         demoji._load_codes_from_file()
     assert demoji.last_downloaded_timestamp() is None
 

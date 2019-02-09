@@ -17,12 +17,31 @@ import json
 import logging
 import os.path
 import re
+import sys
 import time
 
 import requests
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 del logging
+
+PY2 = sys.version_info[0] == 2
+if PY2:
+    # On a narrow build (the default), we will get
+    # ValueError: unichr() arg not in range(0x10000) (narrow Python build)
+    # for any code points above this range.  Internally, they will be
+    # stored as a UTF-16 surrogate pair
+    import struct
+
+    def chr(i):
+        try:
+            return unichr(i)
+        except ValueError:
+            return struct.pack("i", i).decode("utf-32")
+else:
+    chr = chr
+
+del sys
 
 # Download endpoint
 URL = "http://unicode.org/Public/emoji/12.0/emoji-test.txt"
@@ -72,9 +91,9 @@ def _raw_stream_unicodeorg_emojifile(url):
     for line in resp.iter_lines():
         if not line or line.startswith(POUNDSIGN):
             continue
-        codes, desc = line.split(SEMICOLON, maxsplit=1)
-        _, desc = desc.split(POUNDSIGN, maxsplit=1)
-        *_, desc = desc.split(SPACE, maxsplit=2)
+        codes, desc = line.split(SEMICOLON, 1)
+        _, desc = desc.split(POUNDSIGN, 1)
+        desc = desc.split(SPACE, 2)[-1]
         yield (codes.strip().decode("utf-8"), desc.strip().decode("utf-8"))
 
 
@@ -149,7 +168,7 @@ def last_downloaded_timestamp():
     try:
         ts, _ = _load_codes_from_file()
         return ts
-    except FileNotFoundError:
+    except IOError:
         return None
 
 
@@ -167,8 +186,8 @@ def set_emoji_pattern():
     if _EMOJI_PAT is None:
         try:
             _, codes = _load_codes_from_file()
-        except FileNotFoundError:
-            raise FileNotFoundError(
+        except IOError:
+            raise IOError(
                 "No cached data found at %s. First, download"
                 " codes locally using `demoji.download_codes()`" % CACHEPATH
             )

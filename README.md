@@ -2,6 +2,36 @@
 
 Accurately find or remove [emojis](https://en.wikipedia.org/wiki/Emoji) from a blob of text.
 
+<table>
+<tr>
+  <td>Supports</td>
+  <td>Python 2.7 | 3.5 | 3.6 | 3.7</td>
+</tr>
+<tr>
+  <td>Latest Release</td>
+  <td>
+    <a href="https://pypi.org/project/demoji/">
+    <img src="https://img.shields.io/pypi/v/demoji.svg" alt="latest release" />
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>Package Status</td>
+  <td>
+    <a href="https://pypi.org/project/demoji/">
+    <img src="https://img.shields.io/pypi/status/demoji.svg" alt="status" /></td>
+    </a>
+</tr>
+<tr>
+  <td>License</td>
+  <td>
+    <a href="https://github.com/bsolomon1124/demoji/blob/master/LICENSE">
+    <img src="https://img.shields.io/pypi/l/demoji.svg" alt="license" />
+    </a>
+</td>
+</tr>
+</table>
+
 ## Basic Usage
 
 `demoji` requires an initial data download from the Unicode Consortium's [emoji code repository](http://unicode.org/Public/emoji/12.0/emoji-test.txt).

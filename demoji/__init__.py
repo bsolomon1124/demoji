@@ -120,6 +120,12 @@ _CODE_TO_DESC = {}
 
 
 def download_codes():
+    """Download emoji data to ~/.demoji/codes.json.
+
+    This will also set the global module variables _EMOJI_PAT and
+    _CODE_TO_DESC, which are a regex and dictionary, respectively.
+    """
+
     global _EMOJI_PAT
     global _CODE_TO_DESC
     codes = dict(stream_unicodeorg_emojifile(URL))

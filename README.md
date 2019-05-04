@@ -2,35 +2,12 @@
 
 Accurately find or remove [emojis](https://en.wikipedia.org/wiki/Emoji) from a blob of text.
 
-<table>
-<tr>
-  <td>Supports</td>
-  <td>Python 2.7 | 3.5 | 3.6 | 3.7</td>
-</tr>
-<tr>
-  <td>Latest Release</td>
-  <td>
-    <a href="https://pypi.org/project/demoji/">
-    <img src="https://img.shields.io/pypi/v/demoji.svg" alt="latest release" />
-    </a>
-  </td>
-</tr>
-<tr>
-  <td>Package Status</td>
-  <td>
-    <a href="https://pypi.org/project/demoji/">
-    <img src="https://img.shields.io/pypi/status/demoji.svg" alt="status" /></td>
-    </a>
-</tr>
-<tr>
-  <td>License</td>
-  <td>
-    <a href="https://github.com/bsolomon1124/demoji/blob/master/LICENSE">
-    <img src="https://img.shields.io/pypi/l/demoji.svg" alt="license" />
-    </a>
-</td>
-</tr>
-</table>
+[![License](https://img.shields.io/github/license/bsolomon1124/demoji.svg)](https://github.com/bsolomon1124/demoji/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/demoji.svg)](https://pypi.org/project/demoji/)
+[![Status](https://img.shields.io/pypi/status/demoji.svg)](https://pypi.org/project/demoji/)
+[![Python](https://img.shields.io/pypi/pyversions/demoji.svg)](https://pypi.org/project/demoji)
+
+-------
 
 ## Basic Usage
 

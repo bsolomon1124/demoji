@@ -46,9 +46,6 @@ del sys
 # Download endpoint
 URL = "http://unicode.org/Public/emoji/12.0/emoji-test.txt"
 
-# Host location for this repo
-REPO = "https://github.com/bsolomon1124/demoji/issues"
-
 # Directory location for cached downloaded codes
 DIRECTORY = os.path.join(os.path.expanduser("~"), ".demoji/")
 

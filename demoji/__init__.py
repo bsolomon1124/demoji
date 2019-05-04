@@ -117,21 +117,8 @@ def stream_unicodeorg_emojifile(url=URL):
 
 
 def _compile_codes(codes):
-    # Expensive, but we need to be very careful because it's likely
-    # that 1-2 chars may not compile; see the sequence [42, 65039, 8419]
-    # for an example.
-    ok = []
-    _compile = re.compile
-    _error = re.error
-    append = ok.append
-    for c in sorted(codes, key=len, reverse=True):
-        try:
-            _compile(c)
-        except _error:
-            pass
-        else:
-            append(c)
-    return _compile("|".join(ok))
+    escp = (re.escape(c) for c in sorted(codes, key=len, reverse=True))
+    return re.compile(r"|".join(escp))
 
 
 _EMOJI_PAT = None

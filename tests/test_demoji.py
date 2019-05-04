@@ -50,13 +50,6 @@ def test_download():
     assert os.path.isfile(demoji.CACHEPATH)
 
 
-def test_compile_codes():
-    badmark = "".join((chr(42), chr(65039), chr(8419)))
-    assert demoji._compile_codes([badmark]) == re.compile("")
-    assert demoji._compile_codes(["a"]) == re.compile("a")
-    assert demoji._compile_codes([badmark, "aa", "b"]) == re.compile("aa|b")
-
-
 def test_last_downloaded_timestamp_rettype():
     ts = demoji.last_downloaded_timestamp()
     assert isinstance(ts, datetime.datetime)

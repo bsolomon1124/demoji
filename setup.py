@@ -30,8 +30,9 @@ setup(
     ],
     url="https://github.com/bsolomon1124/demoji",
     packages=["demoji"],
-    long_description=open(
-        os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md")
+    long_description=io.open(
+        os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md"),
+        encoding="utf-8",
     ).read(),
     long_description_content_type="text/markdown",
     classifiers=[

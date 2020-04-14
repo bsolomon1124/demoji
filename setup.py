@@ -40,7 +40,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
-    install_requires=["requests<3.0.0", "setuptools"],
+    install_requires=["requests<3.0.0", "setuptools", "colorama"],
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
 )

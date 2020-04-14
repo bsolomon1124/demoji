@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 __all__ = ("findall", "replace", "last_downloaded_timestamp")
-__version__ = "0.1.5"
+__version__ = "0.1.6-dev0"
 
 import datetime
 import json
@@ -20,6 +20,7 @@ import re
 import sys
 import time
 
+import colorama
 import requests
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -73,12 +74,17 @@ del UTC
 
 
 def _raw_stream_unicodeorg_emojifile(url):
-    print("\033[33m" + "Downloading emoji data ..." + "\033[0m")
+    colorama.init()
+    print(
+        colorama.Fore.YELLOW
+        + "Downloading emoji data ..."
+        + colorama.Style.RESET_ALL
+    )
     resp = requests.request("GET", url, stream=True)
     print(
-        "\033[92m"
+        colorama.Fore.GREEN
         + "... OK"
-        + "\033[0m"
+        + colorama.Style.RESET_ALL
         + " (Got response in %0.2f seconds)" % resp.elapsed.total_seconds()
     )
 
@@ -142,10 +148,18 @@ def _write_codes(codes):
         os.makedirs(DIRECTORY)
     except OSError:
         pass
-    print("\033[33m" + "Writing emoji data to %s ..." % CACHEPATH + "\033[0m")
+    print(
+        colorama.Fore.YELLOW
+        + "Writing emoji data to %s ..." % CACHEPATH
+        + colorama.Style.RESET_ALL
+    )
     with open(CACHEPATH, "w") as f:
         json.dump({"timestamp": time.time(), "codes": codes}, f)
-    print("\033[92m" + "... OK" + "\033[0m")
+    print(
+        colorama.Fore.GREEN
+        + "... OK"
+        + colorama.Style.RESET_ALL
+    )
 
 
 def last_downloaded_timestamp():

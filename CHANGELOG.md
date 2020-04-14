@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.2.1
+
+- Tox: formally add Python 3.8 tests.
+
 ### 0.2.0
 
 - Windows: use the [colorama] package to support printing ANSI escape sequences on Windows;

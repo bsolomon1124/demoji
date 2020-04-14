@@ -1,15 +1,22 @@
+import io
 import os
 from setuptools import setup
 
-from demoji import __version__
 
-# PyPI upload:
-# $ python setup.py sdist bdist_wheel
-# $ twine upload dist/demoji-x.y.z*
+def find_version(filepath):
+    version = None
+    with io.open(filepath) as f:
+        for line in f:
+            if line.startswith("__version__"):
+                version = line.partition("=")[-1].strip().strip("'\"")
+    if not version:
+        raise RuntimeError("Could not find version in __init__.py")
+    return version
+
 
 setup(
     name="demoji",
-    version=__version__,
+    version=find_version("demoji/__init__.py"),
     author="Brad Solomon",
     author_email="brad.solomon.1124@gmail.com",
     description="Accurately remove and replace emojis in text strings.",

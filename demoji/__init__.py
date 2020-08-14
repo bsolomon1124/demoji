@@ -217,3 +217,40 @@ def replace(string, repl=""):
     """
     set_emoji_pattern()
     return _EMOJI_PAT.sub(repl, string)
+
+
+def findall_list(string):
+    """Find emojis within ``string`` like findall() but returns a list with each occurrence instead of dictionary. 
+    Useful for looping through. Added by David Agudelo (@davidagud)
+
+    :param string: The input text to search
+    :type string: str
+    :return: A list of ``[emoji: description]``
+    :rtype: list
+    """
+    
+    set_emoji_pattern()
+
+    return [_CODE_TO_DESC[f] for f in list(_EMOJI_PAT.findall(string))]
+
+
+def replace_w_desc(string):
+    """Replace emojis in ``string`` with their description.
+    Added by David Agudelo (@davidagud)
+
+    :param string: The input text to search
+    :type string: str
+    :return: Modified ``str`` with replacements made
+    :rtype: str
+    """
+
+    set_emoji_pattern()
+
+    emoji_dict = findall(string)
+
+    updated_string = string
+
+    for emoji in emoji_dict:
+        updated_string = string.replace(emoji, ':' + emoji_dict[emoji] + ':')
+
+    return updated_string

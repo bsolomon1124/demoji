@@ -234,13 +234,15 @@ def findall_list(string):
     return [_CODE_TO_DESC[f] for f in list(_EMOJI_PAT.findall(string))]
 
 
-def replace_w_desc(string):
-    """Replace emojis in ``string`` with their description.
+def replace_w_desc(string, separator=":"):
+    """Replace emojis in ``string`` with their description and a ``separator`` immediately before and after ``string.
     Added by David Agudelo (@davidagud)
 
     :param string: The input text to search
     :type string: str
-    :return: Modified ``str`` with replacements made
+    :param separator: String put before and after the emoji description
+    :type separator: str
+    :return: Modified ``str`` with replacements made and separator immediately before and after
     :rtype: str
     """
 
@@ -251,6 +253,6 @@ def replace_w_desc(string):
     updated_string = string
 
     for emoji in emoji_dict:
-        updated_string = string.replace(emoji, ':' + emoji_dict[emoji] + ':')
+        updated_string = string.replace(emoji, separator + emoji_dict[emoji] + separator)
 
     return updated_string

@@ -18,7 +18,7 @@ setup(
     name="demoji",
     version=find_version("demoji/__init__.py"),
     author="Brad Solomon",
-    author_email="brad.solomon.1124@gmail.com",
+    author_email="bsolomon@protonmail.com",
     description="Accurately remove and replace emojis in text strings.",
     license="Apache 2.0",
     keywords=[

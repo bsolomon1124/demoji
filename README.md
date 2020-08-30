@@ -26,7 +26,7 @@ Writing emoji data to /Users/brad/.demoji/codes.json ...
 
 This will store the Unicode hex-notated symbols at `~/.demoji/codes.json` for future use.
 
-`demoji` exports two text-related functions, `findall()` and `replace()`, which behave somewhat the `re` module's `findall()` and `sub()`, respectively.  However, `findall()` returns a dictionary of emojis to their full name (description):
+`demoji` exports several text-related functions for find-and-replace functionality with emojis:
 
 ```python
 >>> tweet = """\
@@ -50,6 +50,8 @@ This will store the Unicode hex-notated symbols at `~/.demoji/codes.json` for fu
 }
 ```
 
+See [below](#reference) for function API.
+
 The reason that `demoji` requires a download rather than coming pre-packaged with Unicode emoji data is that the emoji list itself is frequently updated and changed.  You are free to periodically update the local cache by calling `demoji.download_codes()` every so often.
 
 To pull your last-downloaded date, you can use the `last_downloaded_timestamp()` helper:
@@ -60,6 +62,48 @@ datetime.datetime(2019, 2, 9, 7, 42, 24, 433776, tzinfo=<demoji.UTC object at 0x
 ```
 
 The result will be `None` if codes have not previously been downloaded.
+
+## Reference
+
+Note: `Text` refers to [`typing.Text`](https://docs.python.org/3/library/typing.html#typing.Text), an alias for `str` in Python 3 or `unicode` in Python 2.
+
+```python
+download_codes() -> None
+```
+
+Download emoji data to \~/.demoji/codes.json.  Required at first module usage, and can be used to periodically update data.
+
+```python
+findall(string: Text) -> Dict[Text, Text]
+```
+
+Find emojis within `string`.  Return a mapping of `{emoji: description}`.
+
+```python
+findall_list(string: Text, desc: bool = True) -> List[Text]
+```
+
+Find emojis within `string`.  Return a list (with possible duplicates).
+
+If `desc` is True, the list contains description codes.  If `desc` is False, the list contains emojis.
+
+```python
+replace(string: Text, repl: Text = "") -> Text
+```
+
+Replace emojis in `string` with `repl`.
+
+```python
+replace_with_desc(string: Text, sep: Text = ":") -> Text
+```
+
+Replace emojis in `string` with their description codes.  The codes are surrounded by `sep`.
+
+```python
+last_downloaded_timestamp() -> Optional[datetime.datetime]
+```
+
+Show the timestamp of last download from `download_codes()`.
 
 ## Footnote: Emoji Sequences
 

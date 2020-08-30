@@ -6,10 +6,15 @@ The set of emojis is refreshable from its canonical source at
 http://www.unicode.org/emoji/charts/full-emoji-list.html.
 """
 
-from __future__ import unicode_literals
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
-__all__ = ("findall", "replace", "last_downloaded_timestamp")
+__all__ = (
+    "findall",
+    "findall_list"
+    "last_downloaded_timestamp",
+    "replace",
+    "replace_with_desc"
+)
 __version__ = "0.2.2-dev0"
 
 import datetime
@@ -36,11 +41,14 @@ if PY2:
 
     def chr(i):
         try:
-            return unichr(i)
+            return unichr(i)  # noqa: F821
         except ValueError:
             return struct.pack("i", i).decode("utf-32")
+
+    dict_items = "iteritems"
 else:
     chr = chr
+    dict_items = "items"
 
 del sys
 
@@ -207,6 +215,25 @@ def findall(string):
     return {f: _CODE_TO_DESC[f] for f in set(_EMOJI_PAT.findall(string))}
 
 
+def findall_list(string, desc=True):
+    """Find emojis within ``string``; return a list with possible duplicates.
+
+    :param string: The input text to search
+    :type string: str
+    :param desc: Whether to return the description rather than emoji
+    :type desc: bool
+    :return: A list of ``[description, ...]`` in the order in which they
+      are found.
+    :rtype: list
+    """
+
+    set_emoji_pattern()
+    if desc:
+        return [_CODE_TO_DESC[k] for k in _EMOJI_PAT.findall(string)]
+    else:
+        return _EMOJI_PAT.findall(string)
+
+
 def replace(string, repl=""):
     """Replace emojis in ``string`` with ``repl``.
 
@@ -217,3 +244,25 @@ def replace(string, repl=""):
     """
     set_emoji_pattern()
     return _EMOJI_PAT.sub(repl, string)
+
+
+def replace_with_desc(string, sep=":"):
+    """Replace emojis in ``string`` with their description.
+
+    Add a ``sep`` immediately before and after ``string``.
+
+    :param string: The input text to search
+    :type string: str
+    :param sep: String to put before and after the emoji description
+    :type sep: str
+    :return: New copy of ``string`` with replacements made and ``sep``
+      immediately before and after each code
+    :rtype: str
+    """
+
+    set_emoji_pattern()
+    found = findall(string)
+    result = string
+    for emoji, desc in getattr(found, dict_items)():
+        result = result.replace(emoji, sep + desc + sep)
+    return result

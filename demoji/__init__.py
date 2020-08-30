@@ -15,7 +15,7 @@ __all__ = (
     "replace",
     "replace_with_desc"
 )
-__version__ = "0.3.0-RC0"
+__version__ = "0.3.0.RC1"
 
 import datetime
 import json

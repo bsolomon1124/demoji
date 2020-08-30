@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.3.0
+
+- Feature: add `findall_list()` and `replace_with_desc()` functions. (See 7cea333.)
+- Modernize setup config to use `setup.cfg`. (See 8f141e7.)
+
 ### 0.2.1
 
 - Tox: formally add Python 3.8 tests.
@@ -11,7 +16,7 @@
 - Setup: Fix a bug in `setup.py` that would require dependencies to be installed
   _prior to_ installation of `demoji` in order to find the `__version__`.
   (See d5f429c.)
-- Python 2 + Windows support: use `io.open(..., encoding='utf-8')` consistently in` setup.py`.
+- Python 2 + Windows support: use `io.open(..., encoding='utf-8')` consistently in `setup.py`.
   (See 1efec5d.)
 - Distribution: use a universal wheel in PyPI release. (See 8636a32.)
 

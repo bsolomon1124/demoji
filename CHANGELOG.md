@@ -1,15 +1,22 @@
 # Changelog
 
-### 0.3.0
+## 0.4.0
+
+- Update emoji source list to version 13.1. (See 5090eb5.)
+- Formally support Python 3.9. (See 6e9c34c.)
+- Bugfix: ensure that `demoji.last_downloaded_timestamp()` returns correct UTC time.
+  (See 6c8ad15.)
+
+## 0.3.0
 
 - Feature: add `findall_list()` and `replace_with_desc()` functions. (See 7cea333.)
 - Modernize setup config to use `setup.cfg`. (See 8f141e7.)
 
-### 0.2.1
+## 0.2.1
 
 - Tox: formally add Python 3.8 tests.
 
-### 0.2.0
+## 0.2.0
 
 - Windows: use the [colorama] package to support printing ANSI escape sequences on Windows;
   this introduces colorama as a dependency.  (See cd343c1.)
@@ -22,7 +29,7 @@
 
 [colorama]: https://github.com/tartley/colorama
 
-### 0.1.5
+## 0.1.5
 
 - Performance improvement: use `re.escape()` rather than failing to compile a small subset of codes.
 - Remove an unused constant in `__init__.py`.

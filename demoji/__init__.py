@@ -53,7 +53,7 @@ else:
 del sys
 
 # Download endpoint
-URL = "http://unicode.org/Public/emoji/12.0/emoji-test.txt"
+URL = "https://unicode.org/Public/emoji/13.1/emoji-test.txt"
 
 # Directory location for cached downloaded codes
 DIRECTORY = os.path.join(os.path.expanduser("~"), ".demoji")
@@ -96,16 +96,18 @@ def _raw_stream_unicodeorg_emojifile(url):
         + " (Got response in %0.2f seconds)" % resp.elapsed.total_seconds()
     )
 
-    POUNDSIGN = b"#"
-    SEMICOLON = b";"
-    SPACE = b" "
+    POUNDSIGN = "#"
+    POUNDSIGN_B = b"#"
+    SEMICOLON = ";"
+    SPACE = " "
     for line in resp.iter_lines():
-        if not line or line.startswith(POUNDSIGN):
+        if not line or line.startswith(POUNDSIGN_B):
             continue
+        line = line.decode("utf-8")
         codes, desc = line.split(SEMICOLON, 1)
         _, desc = desc.split(POUNDSIGN, 1)
-        desc = desc.split(SPACE, 2)[-1]
-        yield (codes.strip().decode("utf-8"), desc.strip().decode("utf-8"))
+        desc = desc.split(SPACE, 3)[-1]
+        yield (codes.strip(), desc.strip())
 
 
 def parse_unicode_sequence(string):

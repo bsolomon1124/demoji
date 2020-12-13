@@ -181,9 +181,9 @@ def last_downloaded_timestamp():
 def _load_codes_from_file():
     with open(CACHEPATH) as f:
         data = json.load(f)
-        ts = datetime.datetime.fromtimestamp(data["timestamp"])
+        ts = datetime.datetime.fromtimestamp(data["timestamp"], utc)
         codes = data["codes"]
-        return ts.replace(tzinfo=utc), codes
+        return ts, codes
 
 
 def set_emoji_pattern():

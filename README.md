@@ -73,7 +73,7 @@ replace_with_desc(string: str, sep: str = ":") -> str
 Replace emojis in `string` with their description codes.  The codes are surrounded by `sep`.
 
 ```python
-last_downloaded_timestamp() -> Optional[datetime.datetime]
+last_downloaded_timestamp() -> datetime.datetime
 ```
 
 Show the timestamp of last download for the emoji data bundled with the package.

@@ -45,6 +45,7 @@ SemVer PATCH:
   with a `@cache_setter` to set the cache
 - Some unit tests have been removed to update the change in behavior from
   downloading codes to bundling codes with install
+- Update README to reflect bundling behavior
 
 ## 0.4.0
 

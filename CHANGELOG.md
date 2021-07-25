@@ -1,5 +1,52 @@
 # Changelog
 
+## Version 1.0.0 (Unreleased)
+
+**This is a backwards-incompatible release with several substantial changes.**
+
+The largest change is that `demoji` now bundles a static copy of Unicode
+emoji data with the package at install time, rather than requiring a runtime
+download of the codes from unicode.org.
+
+Changes below are grouped by their corresponding
+[Semantic Versioning](https://semver.org/) identifier.
+
+SemVer MAJOR:
+
+- Drop support for Python 2 and Python 3.5
+- The `demoji` package now bundles emoji data that is distributed with the
+  package at install time, rather than requiring a download of the codes
+  from the unicode.org site at runtime (closes #23)
+- As a result of the above change, the following functions are **removed**
+  from the `demoji` API:
+  - `download_codes()`
+  - `parse_unicode_sequence()`
+  - `parse_unicode_range()`
+  - `stream_unicodeorg_emojifile()`
+
+SemVer MINOR:
+
+- The `demoji.DIRECTORY` and `demoji.CACHEPATH` attributes are deprecated
+  due to no longer being functionally in used by the package. Accessing them
+  will warn with a `FutureWarning`, and these attributes may be removed
+  completely in a future release
+- `demoji` can now be installed with optional `ujson` support for faster loading
+  of emoji data from file (versus the standard library's `json`, which is the
+  default); use `python -m pip install demoji[ujson]`
+- The dependencies `requests` and `colorama` have been removed completely
+- `importlib_resources` (a backport module) is now required for Python < 3.7
+- The `EMOJI_VERSION` attribute, newly added to `demoji`, is a `str` denoting
+  the Unicode database version in use
+
+SemVer PATCH:
+
+- Fix a typo in `demoji.__all__` to properly include `demoji.findall_list()`
+- Internal change: Functions that call `set_emoji_pattern()` are now decorated
+  with a `@cache_setter` to set the cache
+- Some unit tests have been removed to update the change in behavior from
+  downloading codes to bundling codes with install
+- Update README to reflect bundling behavior
+
 ## 0.4.0
 
 - Update emoji source list to version 13.1. (See 5090eb5.)

@@ -1,6 +1,7 @@
 # demoji
 
-Accurately find or remove [emojis](https://en.wikipedia.org/wiki/Emoji) from a blob of text.
+Accurately find or remove [emojis](https://en.wikipedia.org/wiki/Emoji) from a blob of text using
+data from the Unicode Consortium's [emoji code repository](https://unicode.org/Public/emoji/).
 
 [![License](https://img.shields.io/github/license/bsolomon1124/demoji.svg)](https://github.com/bsolomon1124/demoji/blob/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/demoji.svg)](https://pypi.org/project/demoji/)
@@ -9,22 +10,13 @@ Accurately find or remove [emojis](https://en.wikipedia.org/wiki/Emoji) from a b
 
 -------
 
+## Changes in Version 1.x
+
+Version 1.x of `demoji` now bundles Unicode data in the package at install time rather than requiring
+a download of the codes from unicode.org at runtime. Please see the [CHANGELOG.md](CHANGELOG.md)
+for detail.
+
 ## Basic Usage
-
-`demoji` requires an initial data download from the Unicode Consortium's [emoji code repository](http://unicode.org/Public/emoji/12.0/emoji-test.txt).
-
-On first use of the package, call `download_codes()`:
-
-```python
->>> import demoji
->>> demoji.download_codes()
-Downloading emoji data ...
-... OK (Got response in 0.14 seconds)
-Writing emoji data to /Users/brad/.demoji/codes.json ...
-... OK
-```
-
-This will store the Unicode hex-notated symbols at `~/.demoji/codes.json` for future use.
 
 `demoji` exports several text-related functions for find-and-replace functionality with emojis:
 
@@ -52,35 +44,16 @@ This will store the Unicode hex-notated symbols at `~/.demoji/codes.json` for fu
 
 See [below](#reference) for function API.
 
-The reason that `demoji` requires a download rather than coming pre-packaged with Unicode emoji data is that the emoji list itself is frequently updated and changed.  You are free to periodically update the local cache by calling `demoji.download_codes()` every so often.
-
-To pull your last-downloaded date, you can use the `last_downloaded_timestamp()` helper:
-
-```python
->>> demoji.last_downloaded_timestamp()
-datetime.datetime(2019, 2, 9, 7, 42, 24, 433776, tzinfo=<demoji.UTC object at 0x101b9ecf8>)
-```
-
-The result will be `None` if codes have not previously been downloaded.
-
 ## Reference
 
-Note: `Text` refers to [`typing.Text`](https://docs.python.org/3/library/typing.html#typing.Text), an alias for `str` in Python 3 or `unicode` in Python 2.
-
 ```python
-download_codes() -> None
-```
-
-Download emoji data to \~/.demoji/codes.json.  Required at first module usage, and can be used to periodically update data.
-
-```python
-findall(string: Text) -> Dict[Text, Text]
+findall(string: str) -> Dict[str, str]
 ```
 
 Find emojis within `string`.  Return a mapping of `{emoji: description}`.
 
 ```python
-findall_list(string: Text, desc: bool = True) -> List[Text]
+findall_list(string: str, desc: bool = True) -> List[str]
 ```
 
 Find emojis within `string`.  Return a list (with possible duplicates).
@@ -88,22 +61,22 @@ Find emojis within `string`.  Return a list (with possible duplicates).
 If `desc` is True, the list contains description codes.  If `desc` is False, the list contains emojis.
 
 ```python
-replace(string: Text, repl: Text = "") -> Text
+replace(string: str, repl: str = "") -> str
 ```
 
 Replace emojis in `string` with `repl`.
 
 ```python
-replace_with_desc(string: Text, sep: Text = ":") -> Text
+replace_with_desc(string: str, sep: str = ":") -> str
 ```
 
 Replace emojis in `string` with their description codes.  The codes are surrounded by `sep`.
 
 ```python
-last_downloaded_timestamp() -> Optional[datetime.datetime]
+last_downloaded_timestamp() -> datetime.datetime
 ```
 
-Show the timestamp of last download from `download_codes()`.
+Show the timestamp of last download for the emoji data bundled with the package.
 
 ## Footnote: Emoji Sequences
 

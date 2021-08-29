@@ -1,9 +1,11 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.1.0
 
 - Add a `__main.py__` to allow running `python -m demoji`;
+  add an entry-point `demoji` command;
   permit stdin (`-`), file name(s), or piped stdin.
+  Contribution by @jap.
 
 ## 1.0.0
 

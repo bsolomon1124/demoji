@@ -46,6 +46,25 @@ To report any regressions, please [open a GitHub issue](https://github.com/bsolo
 
 See [below](#reference) for function API.
 
+## Command-line Use
+
+You can use `demoji` or `python -m demoji` to replace emojis
+in file(s) or stdin with their `:code:` equivalents:
+
+```bash
+$ cat out.txt
+All done! ✨ 🍰 ✨
+$ demoji out.txt
+All done! :sparkles: :shortcake: :sparkles:
+
+$ echo 'All done! ✨ 🍰 ✨' | demoji
+All done! :sparkles: :shortcake: :sparkles:
+
+$ demoji -
+we didnt start the 🔥
+we didnt start the :fire:
+```
+
 ## Reference
 
 ```python

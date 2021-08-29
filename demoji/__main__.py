@@ -21,8 +21,8 @@ def main():
         "files",
         nargs="+",
         help=(
-              "One or more Python files to demoji-fy,"
-              " or '-' for stdin; also accepts piped stdin"
+            "One or more Python files to demoji-fy,"
+            " or '-' for stdin; also accepts piped stdin"
         ),
     )
     args = parser.parse_args()

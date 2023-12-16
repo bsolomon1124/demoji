@@ -35,7 +35,7 @@ else:
     import importlib_resources
 
 # Download endpoint
-EMOJI_VERSION = "13.1"
+EMOJI_VERSION = "15.1"
 URL = "https://unicode.org/Public/emoji/%s/emoji-test.txt" % EMOJI_VERSION
 
 
@@ -153,9 +153,7 @@ def replace_with_desc(string, sep=":"):
 
 
 # This variable is updated automatically from scripts/download_codes.py
-_LDT = datetime.datetime(
-    2021, 7, 18, 19, 57, 25, 20304, tzinfo=datetime.timezone.utc
-)  # noqa: E501
+_LDT = datetime.datetime(2023, 12, 16, 11, 46, 58, 173037, tzinfo=datetime.timezone.utc)  # noqa: E501
 
 
 def last_downloaded_timestamp():

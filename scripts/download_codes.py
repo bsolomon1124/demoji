@@ -1,42 +1,42 @@
 #!/usr/bin/env python3
 
-"""Download emoji data to package_data."""
+"""Download emoji data to package data.
+
+Run from the project root: `uv run scripts/download_codes.py`.
+Refreshes `src/demoji/codes.json` and the `_LDT` timestamp in the package.
+"""
+
+from __future__ import annotations
 
 import datetime
 import json
 import pathlib
 import re
 import time
-
-import colorama
-import requests
+import urllib.request
 
 from demoji import URL
 
-# We do *not* use importlib.resources here since we just want the source file,
-# not where it (might) be instlled
-parent = pathlib.Path(__file__).parent.parent.resolve() / "demoji"
-CACHEPATH = parent / "codes.json"
-MODULEPATH = parent / "__init__.py"
+ROOT = pathlib.Path(__file__).parent.parent.resolve()
+PACKAGE_DIR = ROOT / "src" / "demoji"
+CACHEPATH = PACKAGE_DIR / "codes.json"
+MODULEPATH = PACKAGE_DIR / "__init__.py"
 
 
-def download_codes(dest=CACHEPATH):
+def download_codes(dest: pathlib.Path = CACHEPATH) -> None:
     codes = dict(stream_unicodeorg_emojifile(URL))
-    _write_codes(codes, CACHEPATH)
+    _write_codes(codes, dest)
 
 
-def _write_codes(codes, dest):
-    print(
-        colorama.Fore.YELLOW
-        + "Writing emoji data to %s ..." % CACHEPATH
-        + colorama.Style.RESET_ALL
-    )
-    with open(CACHEPATH, "w") as f:
-        json.dump(codes, f, separators=(",", ":"))
-    print(colorama.Fore.GREEN + "... OK" + colorama.Style.RESET_ALL)
+def _write_codes(codes: dict[str, str], dest: pathlib.Path) -> None:
+    print(f"Writing emoji data to {dest} ...")
+    with dest.open("w", encoding="utf-8") as f:
+        json.dump(codes, f, separators=(",", ":"), ensure_ascii=False)
+        f.write("\n")
+    print("... OK")
 
 
-def stream_unicodeorg_emojifile(url=URL):
+def stream_unicodeorg_emojifile(url: str = URL):
     for codes, desc in _raw_stream_unicodeorg_emojifile(url):
         if ".." in codes:
             for cp in parse_unicode_range(codes):
@@ -45,59 +45,46 @@ def stream_unicodeorg_emojifile(url=URL):
             yield parse_unicode_sequence(codes), desc
 
 
-def parse_unicode_sequence(string):
-    return "".join((chr(int(i.zfill(8), 16)) for i in string.split()))
+def parse_unicode_sequence(string: str) -> str:
+    return "".join(chr(int(i.zfill(8), 16)) for i in string.split())
 
 
-def parse_unicode_range(string):
+def parse_unicode_range(string: str):
     start, _, end = string.partition("..")
-    start, end = map(lambda i: int(i.zfill(8), 16), (start, end))
-    return (chr(i) for i in range(start, end + 1))
+    start_i, end_i = (int(i.zfill(8), 16) for i in (start, end))
+    return (chr(i) for i in range(start_i, end_i + 1))
 
 
-def _raw_stream_unicodeorg_emojifile(url):
-    colorama.init()
-    print(
-        colorama.Fore.YELLOW
-        + "Downloading emoji data from %s ..." % URL
-        + colorama.Style.RESET_ALL
-    )
-    resp = requests.request("GET", url, stream=True)
-    print(
-        colorama.Fore.GREEN
-        + "... OK"
-        + colorama.Style.RESET_ALL
-        + " (Got response in %0.2f seconds)" % resp.elapsed.total_seconds()
-    )
+def _raw_stream_unicodeorg_emojifile(url: str):
+    print(f"Downloading emoji data from {url} ...")
+    start = time.monotonic()
+    with urllib.request.urlopen(url) as resp:
+        body = resp.read().decode("utf-8")
+    print(f"... OK (Got response in {time.monotonic() - start:.2f} seconds)")
 
-    POUNDSIGN = "#"
-    POUNDSIGN_B = b"#"
-    SEMICOLON = ";"
-    SPACE = " "
-    for line in resp.iter_lines():
-        if not line or line.startswith(POUNDSIGN_B):
+    for line in body.splitlines():
+        if not line or line.startswith("#"):
             continue
-        line = line.decode("utf-8")
-        codes, desc = line.split(SEMICOLON, 1)
-        _, desc = desc.split(POUNDSIGN, 1)
-        desc = desc.split(SPACE, 3)[-1]
-        yield (codes.strip(), desc.strip())
+        codes, _, rest = line.partition(";")
+        _, _, after_hash = rest.partition("#")
+        # after_hash looks like: " 😀 E1.0 grinning face"
+        parts = after_hash.strip().split(" ", 2)
+        if len(parts) < 3:
+            continue
+        desc = parts[-1]
+        yield codes.strip(), desc.strip()
 
 
-def replace_lastdownloaded_timestamp():
-    with open(MODULEPATH) as f:
-        text = f.read()
-    now = datetime.datetime.fromtimestamp(
-        time.time(), tz=datetime.timezone.utc
-    )
-    ldt_re = re.compile(r"^_LDT = .*$", re.M)
-    with open(MODULEPATH, "w") as f:
-        f.write(ldt_re.sub("_LDT = %r  # noqa: E501" % now, text))
-    print(
-        colorama.Fore.GREEN
-        + "Replaced timestamp with %r in %s" % (now, MODULEPATH)
-        + colorama.Style.RESET_ALL
-    )
+def replace_lastdownloaded_timestamp() -> None:
+    text = MODULEPATH.read_text(encoding="utf-8")
+    now = datetime.datetime.fromtimestamp(time.time(), tz=datetime.timezone.utc)
+    ldt_re = re.compile(r"^_LDT = .*?(?:\n\s+.*?)*\)\s*(?:#.*)?$", re.M)
+    replacement = f"_LDT = {now!r}  # noqa: E501"
+    new_text, n = ldt_re.subn(replacement, text, count=1)
+    if n != 1:
+        raise RuntimeError("Failed to locate _LDT assignment to update")
+    MODULEPATH.write_text(new_text, encoding="utf-8")
+    print(f"Replaced timestamp with {now!r} in {MODULEPATH}")
 
 
 if __name__ == "__main__":

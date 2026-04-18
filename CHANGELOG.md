@@ -1,89 +1,162 @@
 # Changelog
 
-## 1.1.0
+All notable changes to this project will be documented in this file.
 
-- Add a `__main.py__` to allow running `python -m demoji`;
-  add an entry-point `demoji` command;
-  permit stdin (`-`), file name(s), or piped stdin.
-  Contribution by @jap.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.0.0
+## [Unreleased]
 
-**This is a backwards-incompatible release with several substantial changes.**
+## [2.0.0] - 2026-04-18
 
-The largest change is that `demoji` now bundles a static copy of Unicode
-emoji data with the package at install time, rather than requiring a runtime
-download of the codes from unicode.org.
+### Added
 
-Changes below are grouped by their corresponding
-[Semantic Versioning](https://semver.org/) identifier.
+- Bundled Unicode emoji data updated to version 16.0 (from 13.1). Closes #32 and
+  #33 — emoji sequences such as `🫶🏻` (heart hands with skin tone) and the
+  `🧑🏻‍❤️‍💋‍🧑🏼` family of "kiss: person, person" sequences are now recognized.
+- GitHub Actions CI workflow running lint, format, type check, and tests
+  across Python 3.10 – 3.14.
+- `ruff` for lint + format and [`ty`](https://github.com/astral-sh/ty) for
+  type checking.
 
-SemVer MAJOR:
+### Changed
 
-- Drop support for Python 2 and Python 3.5
-- The `demoji` package now bundles emoji data that is distributed with the
-  package at install time, rather than requiring a download of the codes
-  from the unicode.org site at runtime (closes #23)
-- As a result of the above change, the following functions are **removed**
-  from the `demoji` API:
-  - `download_codes()`
-  - `parse_unicode_sequence()`
-  - `parse_unicode_range()`
-  - `stream_unicodeorg_emojifile()`
+- Moved to a `src/` layout. `demoji` now lives at `src/demoji/`.
+- Switched the build backend to [`uv_build`](https://docs.astral.sh/uv/) and
+  consolidated all project metadata into `pyproject.toml`.
+- Emoji patterns are now compiled once at import time instead of lazily.
 
-SemVer MINOR:
+### Fixed
 
-- The `demoji.DIRECTORY` and `demoji.CACHEPATH` attributes are deprecated
-  due to no longer being functionally in used by the package. Accessing them
-  will warn with a `FutureWarning`, and these attributes may be removed
-  completely in a future release
-- `demoji` can now be installed with optional `ujson` support for faster loading
-  of emoji data from file (versus the standard library's `json`, which is the
-  default); use `python -m pip install demoji[ujson]`
-- The dependencies `requests` and `colorama` have been removed completely
-- `importlib_resources` (a backport module) is now required for Python < 3.7
-- The `EMOJI_VERSION` attribute, newly added to `demoji`, is a `str` denoting
-  the Unicode database version in use
+- `replace()` and `replace_with_desc()` now strip orphaned U+FE0F / U+FE0E
+  variation selectors left in the output when the input contains a stray
+  selector. Closes #25.
 
-SemVer PATCH:
+### Removed
 
-- Fix a typo in `demoji.__all__` to properly include `demoji.findall_list()`
-- Internal change: Functions that call `set_emoji_pattern()` are now decorated
-  with a `@cache_setter` to set the cache
-- Some unit tests have been removed to update the change in behavior from
-  downloading codes to bundling codes with install
-- Update README to reflect bundling behavior
+- Support for Python ≤ 3.9. Supported interpreters are now 3.10, 3.11, 3.12,
+  3.13, and 3.14.
+- `setup.py`, `setup.cfg`, `MANIFEST.in`, `tox.ini`, `.coveragerc`,
+  `requirements.txt`, and `requirements/`.
+- The optional `ujson` extra; the stdlib `json` module is used exclusively.
+- The deprecated `DIRECTORY`, `CACHEPATH`, and `download_codes` module-level
+  attributes.
+- `black` and `flake8` (replaced by `ruff`).
 
-## 0.4.0
+### Deprecated
 
-- Update emoji source list to version 13.1. (See 5090eb5.)
-- Formally support Python 3.9. (See 6e9c34c.)
-- Bugfix: ensure that `demoji.last_downloaded_timestamp()` returns correct UTC time.
-  (See 6c8ad15.)
+- The module-level `set_emoji_pattern()` is retained as a no-op for backwards
+  compatibility and may be removed in a future major release.
 
-## 0.3.0
+## [1.1.0] - 2021-07-27
 
-- Feature: add `findall_list()` and `replace_with_desc()` functions. (See 7cea333.)
-- Modernize setup config to use `setup.cfg`. (See 8f141e7.)
+### Added
 
-## 0.2.1
+- `__main__.py` to allow running `python -m demoji`.
+- `demoji` console entry-point command.
+- Support for stdin (`-`), filename arguments, or piped stdin. Contribution by
+  @jap.
 
-- Tox: formally add Python 3.8 tests.
+## [1.0.0] - 2021-06-11
 
-## 0.2.0
+**Backwards-incompatible release.** `demoji` now bundles a static copy of
+Unicode emoji data with the package at install time rather than downloading
+codes from unicode.org at runtime.
 
-- Windows: use the [colorama] package to support printing ANSI escape sequences on Windows;
-  this introduces colorama as a dependency.  (See cd343c1.)
-- Setup: Fix a bug in `setup.py` that would require dependencies to be installed
-  _prior to_ installation of `demoji` in order to find the `__version__`.
-  (See d5f429c.)
-- Python 2 + Windows support: use `io.open(..., encoding='utf-8')` consistently in `setup.py`.
-  (See 1efec5d.)
-- Distribution: use a universal wheel in PyPI release. (See 8636a32.)
+### Added
+
+- Bundled emoji data shipped with the package (closes #23).
+- `EMOJI_VERSION` attribute denoting the Unicode database version in use.
+- Optional `ujson` extra for faster loading of emoji data
+  (`pip install demoji[ujson]`).
+- `importlib_resources` backport required on Python < 3.7.
+
+### Changed
+
+- Internal: functions that call `set_emoji_pattern()` are now decorated with a
+  `@cache_setter` to set the cache.
+- README updated to reflect bundling behavior.
+
+### Removed
+
+- Support for Python 2 and Python 3.5.
+- `download_codes()`, `parse_unicode_sequence()`, `parse_unicode_range()`, and
+  `stream_unicodeorg_emojifile()` from the public API.
+- The `requests` and `colorama` runtime dependencies.
+- Unit tests that asserted the old download-at-runtime behavior.
+
+### Deprecated
+
+- `demoji.DIRECTORY` and `demoji.CACHEPATH`. Accessing them warns with a
+  `FutureWarning`.
+
+### Fixed
+
+- Typo in `demoji.__all__` that omitted `demoji.findall_list()`.
+
+## [0.4.0] - 2021-01-26
+
+### Added
+
+- Formal support for Python 3.9.
+
+### Changed
+
+- Updated emoji source list to version 13.1.
+
+### Fixed
+
+- `demoji.last_downloaded_timestamp()` returns correct UTC time.
+
+## [0.3.0] - 2020-04-25
+
+### Added
+
+- `findall_list()` and `replace_with_desc()` functions.
+
+### Changed
+
+- Modernized setup config to use `setup.cfg`.
+
+## [0.2.1] - 2019-12-03
+
+### Added
+
+- Formal Python 3.8 tests via tox.
+
+## [0.2.0] - 2019-09-10
+
+### Added
+
+- Windows support: use [colorama] to support printing ANSI escape sequences on
+  Windows. This introduces colorama as a dependency.
+- Universal wheel in PyPI release.
+
+### Fixed
+
+- `setup.py` bug that required dependencies to be installed prior to installing
+  `demoji` in order to find `__version__`.
+- Python 2 + Windows: use `io.open(..., encoding="utf-8")` consistently in
+  `setup.py`.
+
+## [0.1.5] - 2019-07-30
+
+### Changed
+
+- Performance improvement: use `re.escape()` rather than failing to compile a
+  small subset of codes.
+
+### Removed
+
+- Unused constant in `__init__.py`.
 
 [colorama]: https://github.com/tartley/colorama
-
-## 0.1.5
-
-- Performance improvement: use `re.escape()` rather than failing to compile a small subset of codes.
-- Remove an unused constant in `__init__.py`.
+[Unreleased]: https://github.com/bsolomon1124/demoji/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/bsolomon1124/demoji/compare/v1.1.0...v2.0.0
+[1.1.0]: https://github.com/bsolomon1124/demoji/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/bsolomon1124/demoji/compare/v0.4.0...v1.0.0
+[0.4.0]: https://github.com/bsolomon1124/demoji/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/bsolomon1124/demoji/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/bsolomon1124/demoji/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/bsolomon1124/demoji/compare/v0.1.5...v0.2.0
+[0.1.5]: https://github.com/bsolomon1124/demoji/releases/tag/v0.1.5

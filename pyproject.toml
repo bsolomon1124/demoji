@@ -1,6 +1,115 @@
 [build-system]
-requires = [
-  "setuptools >= 40.9.0",
-  "wheel",
+requires = ["uv_build>=0.11.7,<0.12"]
+build-backend = "uv_build"
+
+[project]
+name = "demoji"
+version = "2.0.0"
+description = "Accurately remove and replace emojis in text strings"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10,<3.15"
+authors = [
+    { name = "Brad Solomon" },
 ]
-build-backend = "setuptools.build_meta"
+maintainers = [
+    { name = "Brad Solomon" },
+]
+keywords = ["emoji", "emojis", "nlp", "natural language processing", "unicode"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+    "Topic :: Text Processing",
+    "Topic :: Text Processing :: Linguistic",
+    "Typing :: Typed",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.urls]
+Homepage = "https://github.com/bsolomon1124/demoji"
+Source = "https://github.com/bsolomon1124/demoji"
+Documentation = "https://github.com/bsolomon1124/demoji/blob/master/README.md"
+Changelog = "https://github.com/bsolomon1124/demoji/blob/master/CHANGELOG.md"
+"Bug Reports" = "https://github.com/bsolomon1124/demoji/issues"
+
+[project.scripts]
+demoji = "demoji.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9",
+    "pytest-cov>=7.0",
+    "ruff>=0.15.11",
+    "ty>=0.0.31",
+]
+
+[tool.uv.build-backend]
+module-root = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=demoji",
+    "--cov-report=term-missing",
+    "--cov-fail-under=75",
+]
+
+[tool.coverage.run]
+source = ["demoji"]
+branch = true
+
+[tool.coverage.report]
+exclude_also = [
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+    "C4",   # flake8-comprehensions
+    "PIE",  # flake8-pie
+    "PT",   # flake8-pytest-style
+    "RET",  # flake8-return
+    "RUF",  # ruff-specific
+    "TID",  # flake8-tidy-imports
+    "ICN",  # flake8-import-conventions
+    "N",    # pep8-naming
+    "PTH",  # flake8-use-pathlib
+]
+ignore = [
+    "E501",   # handled by formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501", "UP031", "SIM300", "N802", "RUF001"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ty.src]
+include = ["src", "tests", "scripts"]

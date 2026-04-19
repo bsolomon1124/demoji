@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- License changed from Apache-2.0 to MIT.
+
 ## [2.0.0] - 2026-04-18
 
 ### Added

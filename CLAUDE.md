@@ -71,3 +71,7 @@ marked `# pragma: no cover`.
 - When updating `src/demoji/codes.json`, ensure a trailing newline (the
   download script does this; manual edits must too) or the `end-of-file-fixer`
   pre-commit hook will fail.
+
+## Pull request titles
+
+Follow Conventional Commits format: `<type>: <description>` (e.g. `chore: update dependencies`, `fix: handle edge case`, `feat: add new API function`).

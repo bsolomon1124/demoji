@@ -7,7 +7,7 @@ name = "demoji"
 version = "2.0.0"
 description = "Accurately remove and replace emojis in text strings"
 readme = "README.md"
-license = "Apache-2.0"
+license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10,<3.15"
 authors = [

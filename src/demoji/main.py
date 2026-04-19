@@ -1,25 +1,24 @@
 import argparse
-import io
 import sys
+from collections.abc import Iterable
+from pathlib import Path
 
 from demoji import replace_with_desc
 
 
-def demojify(fp: io.IOBase):
+def demojify(fp: Iterable[str]) -> None:
     for line in fp:
         print(replace_with_desc(line), end="")
 
 
-def main():
-    if not sys.stdin.isatty():
-        if "-h" not in sys.argv and "--help" not in sys.argv:
-            fp = sys.stdin
-            return demojify(fp)
+def main() -> None:
+    if not sys.stdin.isatty() and "-h" not in sys.argv and "--help" not in sys.argv:
+        demojify(sys.stdin)
+        return
 
     parser = argparse.ArgumentParser(
         description=(
-            "Replace emojis in file(s) or string"
-            " with their :code: equivalents"
+            "Replace emojis in file(s) or string with their :code: equivalents"
         )
     )
     parser.add_argument(
@@ -31,15 +30,13 @@ def main():
         ),
     )
     args = parser.parse_args()
-    files = args.files
-    for filename in files:
+    for filename in args.files:
         if filename == "-":
-            fp = sys.stdin
-            demojify(fp)
+            demojify(sys.stdin)
         else:
-            with open(filename) as fp:
+            with Path(filename).open(encoding="utf-8") as fp:
                 demojify(fp)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

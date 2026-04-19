@@ -10,13 +10,18 @@ data from the Unicode Consortium's [emoji code repository](https://unicode.org/P
 
 -------
 
-## Major Changes in Version 1.x
+## Install
 
-Version 1.x of `demoji` now bundles Unicode data in the package at install time rather than requiring
-a download of the codes from unicode.org at runtime. Please see the [CHANGELOG.md](CHANGELOG.md)
-for detail and be familiar with the changes before updating from 0.x to 1.x.
+```bash
+pip install demoji
+# or, with uv:
+uv add demoji
+```
 
-To report any regressions, please [open a GitHub issue](https://github.com/bsolomon1124/demoji/issues/new?assignees=&labels=&template=bug_report.md&title=).
+`demoji` supports Python 3.10 – 3.14 and bundles Unicode emoji data (version 16.0) at install time,
+so no network access is required at runtime. See [CHANGELOG.md](CHANGELOG.md) for the full history.
+
+To report a regression, please [open a GitHub issue](https://github.com/bsolomon1124/demoji/issues/new?assignees=&labels=&template=bug_report.md&title=).
 
 ## Basic Usage
 

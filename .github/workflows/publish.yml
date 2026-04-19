@@ -1,0 +1,116 @@
+name: publish
+
+# Tag-triggered PyPI release with OIDC trusted publishing, Sigstore signing,
+# SBOM (uv export), and GitHub Release creation.
+#
+# Supply-chain hardening:
+#   - Actions pinned to full commit SHAs.
+#   - Minimum permissions at workflow level; escalated per-job.
+#   - Build and publish are separated; publish only reads artifacts built upstream.
+#   - Publish job uses the `pypi` environment (configure required reviewers /
+#     branch protection in GitHub settings).
+#   - No API tokens: PyPI trusted publishing via OIDC; Sigstore via OIDC.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Install uv
+        uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4.2.0
+        with:
+          enable-cache: true
+      - name: Verify tag matches project version
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          pkg_version="$(uv run python -c 'import tomllib, pathlib; print(tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"])')"
+          if [ "$tag" != "$pkg_version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match project version $pkg_version" >&2
+            exit 1
+          fi
+      - name: Build sdist and wheel
+        run: uv build
+      - name: Export SBOM (uv locked requirements)
+        run: uv export --frozen --no-dev --no-emit-project -o sbom-requirements.txt
+      - name: Upload distributions
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+      - name: Upload SBOM
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom
+          path: sbom-requirements.txt
+          if-no-files-found: error
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/demoji/
+    permissions:
+      id-token: write  # OIDC for PyPI trusted publishing
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: dist
+      - name: Publish to PyPI via OIDC
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        with:
+          packages-dir: dist
+          print-hash: true
+
+  sign-and-release:
+    name: Sigstore sign + GitHub Release
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create release
+      id-token: write   # Sigstore OIDC
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist
+          path: dist
+      - name: Download SBOM
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: sbom
+          path: sbom
+      - name: Sign distributions with Sigstore
+        uses: sigstore/gh-action-sigstore-python@04cffa1d795717b140764e8b640de88853c92acc # v3.3.0
+        with:
+          inputs: ./dist/*.tar.gz ./dist/*.whl
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --generate-notes \
+            ./dist/* \
+            ./sbom/sbom-requirements.txt

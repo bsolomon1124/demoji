@@ -1,0 +1,72 @@
+version: "3"
+
+# Task runner — https://taskfile.dev
+# Install:  brew install go-task  (or see https://taskfile.dev/docs/installation)
+# List:     task --list
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  install:
+    desc: Install all dependencies (runtime + dev)
+    cmds:
+      - uv sync
+
+  lint:
+    desc: Run ruff lint checks
+    cmds:
+      - uv run ruff check
+
+  fmt:
+    desc: Apply ruff formatting
+    cmds:
+      - uv run ruff format
+
+  fmt-check:
+    desc: Check formatting without changes
+    cmds:
+      - uv run ruff format --check
+
+  typecheck:
+    desc: Run ty type checker
+    cmds:
+      - uv run ty check
+
+  test:
+    desc: Run pytest with coverage
+    cmds:
+      - uv run pytest
+
+  build:
+    desc: Build sdist and wheel
+    cmds:
+      - uv build
+
+  clean:
+    desc: Remove build artifacts and caches
+    cmds:
+      - rm -rf dist build .ruff_cache .pytest_cache .coverage htmlcov
+      - find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+  precommit:
+    desc: Run all pre-commit hooks
+    cmds:
+      - prek run --all-files
+
+  refresh-codes:
+    desc: Re-download bundled emoji data from unicode.org
+    cmds:
+      - uv run python scripts/download_codes.py
+
+  ci:
+    desc: Run the full CI pipeline locally
+    cmds:
+      - task: lint
+      - task: fmt-check
+      - task: typecheck
+      - task: test
+      - task: build

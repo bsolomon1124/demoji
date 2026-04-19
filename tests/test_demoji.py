@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import datetime
+
 import pytest
 
 import demoji
@@ -33,13 +30,16 @@ def test_last_downloaded_timestamp_rettype():
     assert isinstance(ts, datetime.datetime)
 
 
+def test_set_emoji_pattern_is_noop():
+    # Retained for backwards compatibility; must remain safely callable.
+    assert demoji.set_emoji_pattern() is None
+
+
 def test_demoji_main(tweet):
     assert not demoji.findall("Hi")
     assert demoji.replace("Hi") == "Hi"
     assert not demoji.findall("2 ! $&%((@)# $)@ ")
-    assert demoji.findall("The 🌓 shall rise again") == {
-        "🌓": "first quarter moon"
-    }
+    assert demoji.findall("The 🌓 shall rise again") == {"🌓": "first quarter moon"}
     allhands = "Someone actually gets paid to make a %s, a %s, and a %s" % (
         person_tipping_hand,
         man_tipping_hand,
@@ -51,8 +51,7 @@ def test_demoji_main(tweet):
         woman_tipping_hand: "woman tipping hand",
     }
     assert (
-        demoji.replace(allhands)
-        == "Someone actually gets paid to make a , a , and a "
+        demoji.replace(allhands) == "Someone actually gets paid to make a , a , and a "
     )
     assert (
         demoji.replace(allhands, "X")
@@ -131,6 +130,24 @@ def test_findall_list(tweet):
     assert demoji.findall_list(tweet, False)
     assert "santa claus" in demoji.findall_list(tweet, True)[0].lower()
     assert "🔥" == demoji.findall_list(tweet, False)[1]
+
+
+def test_issue_25_strips_orphan_variation_selector():
+    # https://github.com/bsolomon1124/demoji/issues/25
+    s = "🔁\ufe0f sample text"
+    assert demoji.replace(s) == " sample text"
+
+
+def test_issue_33_heart_hands_skin_tone():
+    # https://github.com/bsolomon1124/demoji/issues/33
+    assert demoji.findall("🫶🏻") == {"🫶🏻": "heart hands: light skin tone"}
+    assert demoji.replace("🫶🏻") == ""
+
+
+def test_issue_32_kiss_person_sequences():
+    # https://github.com/bsolomon1124/demoji/issues/32
+    s = "🧑🏻‍❤️‍💋‍🧑🏼 🧑🏻‍❤️‍💋‍🧑🏽 🧑🏻‍❤️‍💋‍🧑🏾 🧑🏻‍❤️‍💋‍🧑🏿 🧑🏼‍❤️‍💋‍🧑🏻 🧑🏼‍❤️‍💋‍🧑🏽"
+    assert demoji.replace(s).strip() == ""
 
 
 def test_replace_with_desc(tweet):
